@@ -1,0 +1,321 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #0a0a0a;
+  color: #00ff66;
+  font-family: 'Courier New', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 22px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px #00ff66;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #00aa44;
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.difficulty-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.difficulty-bar button {
+  padding: 6px 14px;
+  background: #0a0a0a;
+  border: 1px solid #00ff66;
+  border-radius: 4px;
+  color: #00ff66;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.15s;
+}
+
+.difficulty-bar button:hover {
+  background: #1a1a1a;
+  border-color: #00ffff;
+  color: #00ffff;
+  box-shadow: 0 0 10px rgba(0,255,255,0.3);
+}
+
+.difficulty-bar button.active {
+  background: #00ff66;
+  color: #000;
+  box-shadow: 0 0 14px rgba(0,255,102,0.5);
+}
+
+/* ---- Game container ---- */
+.fallout-lockpick-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  background: #111;
+  border: 2px solid #00ff66;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 0 30px rgba(0,255,102,0.2);
+}
+
+.lockpick-scene {
+  position: relative;
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #1a1a1a 0%, #0a0a0a 100%);
+  border: 2px solid #00ff66;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,255,102,0.3);
+}
+
+.lock-cylinder {
+  position: absolute;
+  width: 90px;
+  height: 120px;
+  background: linear-gradient(180deg, #555 0%, #333 100%);
+  border: 3px solid #666;
+  border-radius: 12px;
+  z-index: 1;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.lockpick-dial {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  z-index: 2;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.dial-rotor {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, #444 0%, #222 60%, #111 100%);
+  border: 3px solid #666;
+  transform-origin: 50% 50%;
+  z-index: 5;
+}
+
+.outer-lock {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.inner-lock {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 48%;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.lockpick-dial:hover {
+  filter: drop-shadow(0 0 12px rgba(0,255,255,0.4));
+}
+
+.lockpick-dial.jamming {
+  animation: shake 0.08s infinite;
+  filter: drop-shadow(0 0 20px rgba(255,136,0,0.6));
+}
+
+.lockpick-dial.broke {
+  filter: drop-shadow(0 0 25px rgba(255,0,0,0.7));
+}
+
+@keyframes shake {
+  0%,100% { transform: translate(0,0); }
+  25%      { transform: translate(-3px,2px); }
+  50%      { transform: translate(2px,-2px); }
+  75%      { transform: translate(-2px,-3px); }
+}
+
+.lockpick-pick {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  width: 6px;
+  height: 125px;
+  background: linear-gradient(to top, #666 0%, #ddd 40%, #fff 50%, #ccc 60%, #777 100%);
+  transform-origin: bottom center;
+  transform: translate(-50%, -100%) rotate(0deg);
+  transition: transform 0.08s ease-out;
+  pointer-events: none;
+  z-index: 25;
+  border-radius: 2px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+.lockpick-pick::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle, #fff 0%, #aaa 100%);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.angle-display {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 13px;
+  color: #00ff66;
+  background: rgba(0,0,0,0.85);
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #00ff66;
+  z-index: 30;
+  font-weight: bold;
+}
+
+/* ---- Controls ---- */
+.lockpick-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(0,20,10,0.6);
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #00ff66;
+}
+
+.wear-container, .force-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wear-container label, .force-container label {
+  font-size: 11px;
+  color: #00ff66;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wear-bar, .force-bar {
+  height: 22px;
+  background: #0a0a0a;
+  border: 2px solid #00ff66;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.wear-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ff66 0%, #ffff00 50%, #ff6600 75%, #ff0000 100%);
+  transition: width 0.2s ease-out;
+  box-shadow: 0 0 8px rgba(0,255,102,0.4);
+}
+
+.force-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ccff 0%, #00ffff 100%);
+  transition: width 0.03s linear;
+  box-shadow: 0 0 10px rgba(0,255,255,0.5);
+  width: 0%;
+}
+
+.lockpick-wrench {
+  padding: 14px 20px;
+  background: #0a0a0a;
+  border: 2px solid #00ff66;
+  border-radius: 8px;
+  color: #00ff66;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  transition: all 0.15s;
+}
+
+.lockpick-wrench:hover {
+  background: #1a1a1a;
+  border-color: #00ffff;
+  box-shadow: 0 0 20px rgba(0,255,255,0.4);
+  transform: translateY(-1px);
+}
+
+.lockpick-wrench:active {
+  background: #00ff66;
+  color: #000;
+  transform: scale(0.97);
+}
+
+.lockpick-wrench i { margin-right: 8px; }
+
+.status-text {
+  text-align: center;
+  font-size: 17px;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(0,255,102,0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px currentColor;
+  color: #00ff66;
+}
+
+.hint-text {
+  text-align: center;
+  font-size: 11px;
+  color: #006633;
+  letter-spacing: 1px;
+}
+
+footer {
+  margin-top: 20px;
+  font-size: 11px;
+  color: #004422;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+footer a {
+  color: #00aa44;
+  text-decoration: none;
+}
+
+footer a:hover { color: #00ff66; }
